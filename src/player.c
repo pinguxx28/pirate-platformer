@@ -14,8 +14,12 @@
 #define P_GUN_CLDWN 60
 
 #define K_SWORD ALLEGRO_KEY_Z
-#define P_SWORD_CLDWN 20
+#define P_SWORD_CLDWN 60 // includes animation too
 #define P_SWORD_ANIM  40
+
+// facing directions
+#define LEFT -1
+#define RIGHT 1 
 
 player p;
 
@@ -63,45 +67,49 @@ static void player_handle_gun() {
 		if (p.gun_timer == 0) {
 			p.gun = false;
 
-			if (p.facing == -1) {
+			if (p.facing == LEFT) {
 				p.x += 4;
 			}
 		}
 	}
-	if (key[K_GUN] && !p.gun) {
+	if (key[K_GUN] && p.gun_timer == 0) {
 		p.gun = true;
 		p.gun_timer = P_GUN_CLDWN;
 		bullet_new(p.x + (p.w / 2), p.y + 4, p.facing * 3);
 
-		if (p.facing == -1) {
+		if (p.facing == LEFT) {
 			p.x -= 4;
 		}
 	}
 }
 
 static void player_handle_sword() {
-	// only when we've finished animation
-	if (p.sword_timer > 0 && !p.sword) {
+	if (p.sword_timer > 0) {
 		p.sword_timer--;
 	}
 
-	if (key[K_SWORD] && !p.sword && !p.sword_timer) {
+	if (key[K_SWORD] && p.sword_timer == 0) {
 		p.sword = true;
-		p.sword_anim = 0;
+		p.sword_anim = P_SWORD_ANIM;
 		p.sword_timer = P_SWORD_CLDWN;
 
-		if (p.facing == -1) p.x -= 2;
+		if (p.facing == LEFT) {
+			p.x -= 2;
+		}
 	}
 
-	// animation
-	if (p.sword) {
-		p.sword_anim++;
-		if (p.sword_anim -1 == P_SWORD_ANIM / 2 && p.facing == -1) {
+	if (p.sword_anim > 0) {
+		p.sword_anim--;
+
+		if (p.facing == LEFT && p.sword_anim + 1 == P_SWORD_ANIM / 2) {
 			p.x -= 3;
 		}
-		if (p.sword_anim >= P_SWORD_ANIM) {
+		if (p.sword_anim == 0) {
 			p.sword = false;
-			if (p.facing == -1) p.x += 5;
+
+			if (p.facing == LEFT) {
+				p.x += 5;
+			}
 		}
 	}
 }
@@ -117,7 +125,7 @@ void player_draw() {
 	frames = (++frames % 40);
 
 	int curr_anim = frames / 20;
-	bool flip_hori = p.facing == -1;
+	bool flip_hori = p.facing == LEFT;
 	int sx, sy;
 	int sw = 8, sh = 8;
 
@@ -136,7 +144,7 @@ void player_draw() {
 		sw = 12;
 	}
 	if (p.sword) {
-		int sword_anim = p.sword_anim / 20;
+		int sword_anim = 1 - p.sword_anim / 20;
 
 		sx = (sword_anim + 6) * 16 + 3;
 		sy = 4;
