@@ -4,6 +4,7 @@
 
 ALLEGRO_BITMAP *characters;
 ALLEGRO_BITMAP *tileset;
+ALLEGRO_BITMAP *decotileset;
 
 void bitmaps_load() {
 	characters = al_load_bitmap("assets/characters.png");
@@ -11,4 +12,7 @@ void bitmaps_load() {
 
 	tileset = al_load_bitmap("assets/tileset.png");
 	if (!tileset) { printf("couldn't load tileset\n"); exit(1); }
+
+	decotileset = al_load_bitmap("assets/decorations.png");
+	if (!decotileset) { printf("couldn't load tilset\n"); exit(1); }
 }
