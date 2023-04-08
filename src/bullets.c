@@ -1,6 +1,6 @@
-#include "src/bullets.h"
+#include "../src/bullets.h"
 
-#include "lib/draw.h"
+#include "../lib/draw.h"
 
 bullet bullets[BULLETS_LEN];
 

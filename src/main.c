@@ -1,10 +1,10 @@
-#include "lib/helper.h"
-#include "lib/disp.h"
-#include "lib/key.h"
-#include "lib/draw.h"
-#include "lib/audio.h"
-#include "lib/font.h"
-#include "src/game.h"
+#include "../lib/helper.h"
+#include "../lib/disp.h"
+#include "../lib/key.h"
+#include "../lib/draw.h"
+#include "../lib/audio.h"
+#include "../lib/font.h"
+#include "../src/game.h"
 
 #include <allegro5/allegro_image.h>
 int main()

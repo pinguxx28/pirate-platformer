@@ -5,6 +5,7 @@
 typedef struct {
 	int x, y;
 	int w, h;
+	float g;
 
 	int dir, facing;
 

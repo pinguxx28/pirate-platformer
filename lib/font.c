@@ -1,6 +1,6 @@
-#include "lib/font.h"
+#include "../lib/font.h"
 
-#include "lib/helper.h"
+#include "../lib/helper.h"
 
 ALLEGRO_FONT *font;
 

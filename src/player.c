@@ -1,10 +1,10 @@
-#include "src/player.h"
-
-#include "lib/disp.h"
-#include "lib/draw.h"
-#include "lib/key.h"
-#include "src/bitmap.h"
-#include "src/bullets.h"
+#include "../src/player.h"
+#include "../lib/disp.h"
+#include "../lib/draw.h"
+#include "../lib/key.h"
+#include "../src/bitmap.h"
+#include "../src/bullets.h"
+#include "../src/map.h"
 
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
@@ -27,7 +27,8 @@ void player_init() {
 	p.w = 8;
 	p.h = 8;
 	p.x = (BUFFER_W - p.w) / 2;
-	p.y = (BUFFER_H - p.h);
+	p.y = 0;
+	p.g = 0.0;
 
 	p.dir = 0;
 	p.facing = 1;
@@ -53,10 +54,18 @@ static void player_handle_movement() {
 		p.x += p.dir * P_MOV_SPD;
 		p.idle = false;
 		p.running = true;
+		p.facing = p.dir;
 	}
 
-	if (p.dir != 0) {
-		p.facing = p.dir;
+	int map_y = p.y / TILE_SIZE;
+	int left_x = (p.x + 1) / TILE_SIZE;
+	int right_x = (p.x + p.w - 1) / TILE_SIZE;
+
+	if (foreground[map_y][left_x]) {
+		p.x = (left_x + 1) * TILE_SIZE - 1;
+	}
+	if (foreground[map_y][right_x]) {
+		p.x = (right_x - 1) * TILE_SIZE + 1;
 	}
 }
 
@@ -72,7 +81,7 @@ static void player_handle_gun() {
 			}
 		}
 	}
-	if (key[K_GUN] && p.gun_timer == 0) {
+	if (key[K_GUN] && p.gun_timer == 0 && !p.sword ) {
 		p.gun = true;
 		p.gun_timer = P_GUN_CLDWN;
 		bullet_new(p.x + (p.w / 2), p.y + 4, p.facing * 3);
@@ -88,7 +97,7 @@ static void player_handle_sword() {
 		p.sword_timer--;
 	}
 
-	if (key[K_SWORD] && p.sword_timer == 0) {
+	if (key[K_SWORD] && p.sword_timer == 0 && !p.gun) {
 		p.sword = true;
 		p.sword_anim = P_SWORD_ANIM;
 		p.sword_timer = P_SWORD_CLDWN;
@@ -114,8 +123,25 @@ static void player_handle_sword() {
 	}
 }
 
+static void player_handle_gravity() {
+	p.g += 0.2;
+	p.y += p.g;
+	
+	int map_y = (p.y + p.h) / TILE_SIZE;
+	int map_x_left = (p.x + 2) / TILE_SIZE;
+	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
+
+	if (foreground[map_y][map_x_left] ||  //bottom left of p
+		foreground[map_y][map_x_right] || //bottom right of p
+		p.y + p.h >= BUFFER_H) {		  //bottom of screen
+		p.g = 0.0;
+		p.y = map_y * TILE_SIZE - p.h;
+	}
+}
+
 void player_update() {
 	player_handle_movement();
+	player_handle_gravity();
 	player_handle_gun();
 	player_handle_sword();
 }

@@ -1,4 +1,4 @@
-#include "lib/key.h"
+#include "../lib/key.h"
 
 #include <string.h>
 

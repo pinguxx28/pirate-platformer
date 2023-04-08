@@ -1,8 +1,8 @@
-#include "lib/audio.h"
+#include "../lib/audio.h"
 
 #include <stdio.h>
 #include <allegro5/allegro_acodec.h>
-#include "lib/helper.h"
+#include "../lib/helper.h"
 
 #define AUDIO_LEN 255
 Audio audio[AUDIO_LEN];

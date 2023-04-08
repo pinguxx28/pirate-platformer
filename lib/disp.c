@@ -1,6 +1,6 @@
-#include "lib/disp.h"
+#include "../lib/disp.h"
 
-#include "lib/helper.h"
+#include "../lib/helper.h"
 
 ALLEGRO_DISPLAY *disp;
 ALLEGRO_BITMAP  *buffer;

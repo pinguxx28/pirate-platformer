@@ -1,6 +1,6 @@
-#include "lib/sprites.h"
+#include "../lib/sprites.h"
 
-#include "lib/helper.h"
+#include "../lib/helper.h"
 
 ALLEGRO_BITMAP *sprite_sheet;
 
