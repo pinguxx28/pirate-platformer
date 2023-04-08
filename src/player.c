@@ -1,10 +1,10 @@
-#include "../src/player.h"
+#include "player.h"
 #include "../lib/disp.h"
 #include "../lib/draw.h"
 #include "../lib/key.h"
-#include "../src/bitmap.h"
-#include "../src/bullets.h"
-#include "../src/map.h"
+#include "bitmap.h"
+#include "bullets.h"
+#include "map/foreground.h"
 
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
@@ -148,7 +148,7 @@ void player_update() {
 
 void player_draw() {
 	static int frames = 0;
-	frames = (++frames % 40);
+	frames = (frames + 1) % 40;
 
 	int curr_anim = frames / 20;
 	bool flip_hori = p.facing == LEFT;

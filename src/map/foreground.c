@@ -1,9 +1,8 @@
-#include "../src/map.h"
+#include "foreground.h"
 
-#include "../lib/draw.h"
-#include "../src/bitmap.h"
+#include "../bitmap.h"
+#include <stdlib.h> // rand
 
-int background[MAP_H][MAP_W];
 int foreground[MAP_H][MAP_W] = {
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
@@ -21,20 +20,28 @@ int foreground[MAP_H][MAP_W] = {
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 	{ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 },
 };
-int decorations[MAP_H][MAP_W];
-
-void background_draw() {
-}
 
 void foreground_draw() {
+	srand(0);
+	int sx, sy;
+	int dx, dy;
+	const int sw = 8;
+	const int sh = 8;
+
 	for (int y = 0; y < MAP_H; y++) {
 		for (int x = 0; x < MAP_W; x++) {
 			if (!foreground[y][x]) continue;
 
-			al_draw_bitmap_region(tileset, 0, 0, 8, 8, x * TILE_SIZE, y * TILE_SIZE, 0);
+			dx = x * TILE_SIZE;
+			dy = y * TILE_SIZE;
+			switch(foreground[y][x]) {
+				case 1:
+					sx = rand() % 8;
+					sy = 0;
+					break;
+			}
+
+			al_draw_bitmap_region(tileset, sx, sy, sw, sh, dx, dy, 0);
 		}
 	}
-}
-
-void decorations_draw() {
 }

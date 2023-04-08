@@ -1,9 +1,9 @@
-#include "../src/game.h"
+#include "game.h"
 
-#include "../src/bitmap.h"
-#include "../src/bullets.h"
-#include "../src/map.h"
-#include "../src/player.h"
+#include "bitmap.h"
+#include "bullets.h"
+#include "player.h"
+#include "map/foreground.h"
 
 void init() {
 	bitmaps_load();
