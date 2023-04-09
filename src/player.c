@@ -6,7 +6,6 @@
 #include "bullets.h"
 
 #include "map/foreground.h"
-#include "map/decorations.h"
 
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
@@ -67,10 +66,10 @@ static void player_handle_movement() {
 	int left_x = (p.x + 1) / TILE_SIZE;
 	int right_x = (p.x + p.w - 1) / TILE_SIZE;
 
-	if (foreground[map_y][left_x]) {
+	if (foreground[map_y][left_x] >= BLOCK) {
 		p.x = (left_x + 1) * TILE_SIZE - 1;
 	}
-	if (foreground[map_y][right_x]) {
+	if (foreground[map_y][right_x] >= BLOCK) {
 		p.x = (right_x - 1) * TILE_SIZE + 1;
 	}
 }
@@ -139,10 +138,8 @@ static void player_handle_gravity() {
 
 	bool block = foreground[map_y][map_x_left] ||
 				 foreground[map_y][map_x_right];
-	bool ladder = decorations[map_y][map_x_left]  == 2 ||
-				  decorations[map_y][map_x_right] == 2;
 
-	if (block || ladder || p.y + p.h >= BUFFER_H) {	
+	if (block || p.y + p.h >= BUFFER_H) {	
 		p.g = 0.0;
 		p.y = map_y * TILE_SIZE - p.h;
 	}
@@ -156,17 +153,20 @@ static void player_handle_ladder() {
 	int keys = key[K_DOWN] | key[K_UP];
 	int dir = (bool)key[K_DOWN] - (bool)key[K_UP];
 
+	// check the square below if down key was pressed
+	// check the current square if up key was pressed
 	int map_y = (p.y + p.h - 1 + dir) / TILE_SIZE;
 	int map_x_left = (p.x + 2) / TILE_SIZE;
 	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
 
-	bool ladder = decorations[map_y][map_x_left]  == 2 ||
-				  decorations[map_y][map_x_right] == 2;
+	bool on_ladder = foreground[map_y][map_x_left]  == LADDER ||
+					 foreground[map_y][map_x_right] == LADDER;
 
 	// if timer has gone or key went up
-	bool k = (dir && p.ladder_timer == 0) || (keys & KEY_RELEASED);
+	bool cond = (dir && p.ladder_timer == 0) ||
+				(keys & KEY_RELEASED);
 
-	if (k && ladder) {
+	if (cond && on_ladder) {
 		p.ladder_timer = P_LADDER_CLDWN;
 		p.y += dir * 8;
 	}
