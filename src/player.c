@@ -4,7 +4,9 @@
 #include "../lib/key.h"
 #include "bitmap.h"
 #include "bullets.h"
+
 #include "map/foreground.h"
+#include "map/decorations.h"
 
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
@@ -16,6 +18,10 @@
 #define K_SWORD ALLEGRO_KEY_Z
 #define P_SWORD_CLDWN 60 // includes animation too
 #define P_SWORD_ANIM  40
+
+#define K_UP ALLEGRO_KEY_UP
+#define K_DOWN ALLEGRO_KEY_DOWN
+#define P_LADDER_CLDWN 20
 
 // facing directions
 #define LEFT -1
@@ -131,11 +137,38 @@ static void player_handle_gravity() {
 	int map_x_left = (p.x + 2) / TILE_SIZE;
 	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
 
-	if (foreground[map_y][map_x_left] ||  //bottom left of p
-		foreground[map_y][map_x_right] || //bottom right of p
-		p.y + p.h >= BUFFER_H) {		  //bottom of screen
+	bool block = foreground[map_y][map_x_left] ||
+				 foreground[map_y][map_x_right];
+	bool ladder = decorations[map_y][map_x_left]  == 2 ||
+				  decorations[map_y][map_x_right] == 2;
+
+	if (block || ladder || p.y + p.h >= BUFFER_H) {	
 		p.g = 0.0;
 		p.y = map_y * TILE_SIZE - p.h;
+	}
+}
+
+static void player_handle_ladder() {
+	if (p.ladder_timer > 0) {
+		p.ladder_timer--;
+	}
+
+	int keys = key[K_DOWN] | key[K_UP];
+	int dir = (bool)key[K_DOWN] - (bool)key[K_UP];
+
+	int map_y = (p.y + p.h - 1 + dir) / TILE_SIZE;
+	int map_x_left = (p.x + 2) / TILE_SIZE;
+	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
+
+	bool ladder = decorations[map_y][map_x_left]  == 2 ||
+				  decorations[map_y][map_x_right] == 2;
+
+	// if timer has gone or key went up
+	bool k = (dir && p.ladder_timer == 0) || (keys & KEY_RELEASED);
+
+	if (k && ladder) {
+		p.ladder_timer = P_LADDER_CLDWN;
+		p.y += dir * 8;
 	}
 }
 
@@ -144,6 +177,7 @@ void player_update() {
 	player_handle_gravity();
 	player_handle_gun();
 	player_handle_sword();
+	player_handle_ladder();
 }
 
 void player_draw() {

@@ -18,6 +18,8 @@ typedef struct {
 	bool sword;
 	int sword_timer;
 	int sword_anim;
+
+	int ladder_timer;
 } player;
 
 void player_init();
