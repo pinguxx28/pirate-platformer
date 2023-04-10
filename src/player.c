@@ -7,6 +7,9 @@
 
 #include "map/foreground.h"
 
+#include "debug.h"
+
+
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
 #define P_MOV_SPD 1
@@ -173,6 +176,8 @@ static void player_handle_ladder() {
 }
 
 void player_update() {
+	debug("pos: %d, %d", p.x, p.y);
+
 	player_handle_movement();
 	player_handle_gravity();
 	player_handle_gun();
