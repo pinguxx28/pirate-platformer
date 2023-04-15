@@ -75,6 +75,14 @@ static void player_handle_movement() {
 	if (foreground[map_y][right_x] >= BLOCK) {
 		p.x = (right_x - 1) * TILE_SIZE + 1;
 	}
+
+	// running up stairs
+	if (foreground[map_y][left_x] == STAIR_LEFT && p.dir == LEFT) {
+		p.y = (map_y - 1) * TILE_SIZE;
+	}
+	if (foreground[map_y][right_x] == STAIR_RIGHT && p.dir == RIGHT) {
+		p.y = (map_y - 1) * TILE_SIZE;
+	}
 }
 
 static void player_handle_gun() {
@@ -176,8 +184,6 @@ static void player_handle_ladder() {
 }
 
 void player_update() {
-	debug("pos: %d, %d", p.x, p.y);
-
 	player_handle_movement();
 	player_handle_gravity();
 	player_handle_gun();
