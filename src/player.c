@@ -51,7 +51,7 @@ void player_init() {
 	p.sword_anim = 0;
 }
 
-static void player_handle_movement() {
+static void player_move() {
 	p.dir = key[K_RIGHT] - key[K_LEFT];
 
 	p.idle = true;
@@ -63,9 +63,11 @@ static void player_handle_movement() {
 		p.running = true;
 		p.facing = p.dir;
 	}
+}
 
-	int map_y = p.y / TILE_SIZE;
-	int left_x = (p.x + 1) / TILE_SIZE;
+void player_block_coll_hori() {
+	int map_y   =  p.y            / TILE_SIZE;
+	int left_x  = (p.x + 1)       / TILE_SIZE;
 	int right_x = (p.x + p.w - 1) / TILE_SIZE;
 
 	if (foreground[map_y][left_x] >= BLOCK) {
@@ -74,17 +76,35 @@ static void player_handle_movement() {
 	if (foreground[map_y][right_x] >= BLOCK) {
 		p.x = (right_x - 1) * TILE_SIZE + 1;
 	}
+}
 
-	// running up stairs
+static void player_coll_stairs() {
+	int map_y   =  p.y            / TILE_SIZE;
+	int left_x  = (p.x + 1)       / TILE_SIZE;
+	int right_x = (p.x + p.w - 1) / TILE_SIZE;
+
 	if (foreground[map_y][left_x] == STAIR_LEFT && p.dir == LEFT) {
 		p.y = (map_y - 1) * TILE_SIZE;
 	}
 	if (foreground[map_y][right_x] == STAIR_RIGHT && p.dir == RIGHT) {
 		p.y = (map_y - 1) * TILE_SIZE;
 	}
+}
 
-	if (p.x < 0) p.x = 0;
-	if (p.x > BUFFER_W - p.w) p.x = BUFFER_W - p.w;
+static void player_coll_edge() {
+	if (p.x < 0) {
+		p.x = 0;
+	}
+	if (p.x > BUFFER_W - p.w) {
+		p.x = BUFFER_W - p.w;
+	}
+}
+
+static void player_handle_movement() {
+	player_move();
+	player_block_coll_hori();
+	player_coll_stairs();
+	player_coll_edge();
 }
 
 static void player_handle_gun() {
@@ -145,8 +165,8 @@ static void player_handle_gravity() {
 	p.g += 0.2;
 	p.y += p.g;
 	
-	int map_y = (p.y + p.h) / TILE_SIZE;
-	int map_x_left = (p.x + 2) / TILE_SIZE;
+	int map_y       = (p.y + p.h)     / TILE_SIZE;
+	int map_x_left  = (p.x + 2)       / TILE_SIZE;
 	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
 
 	bool block = foreground[map_y][map_x_left] ||
@@ -168,9 +188,9 @@ static void player_handle_ladder() {
 
 	// check the square below if down key was pressed
 	// check the current square if up key was pressed
-	int map_y = (p.y + p.h - 1 + dir) / TILE_SIZE;
-	int map_x_left = (p.x + 2) / TILE_SIZE;
-	int map_x_right = (p.x + p.w - 2) / TILE_SIZE;
+	int map_y       = (p.y + p.h - 1 + dir) / TILE_SIZE;
+	int map_x_left  = (p.x + 2)             / TILE_SIZE;
+	int map_x_right = (p.x + p.w - 2)       / TILE_SIZE;
 
 	bool on_ladder = foreground[map_y][map_x_left]  == LADDER ||
 					 foreground[map_y][map_x_right] == LADDER;
