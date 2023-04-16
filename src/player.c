@@ -9,7 +9,6 @@
 
 #include "debug.h"
 
-
 #define K_RIGHT ALLEGRO_KEY_RIGHT
 #define K_LEFT  ALLEGRO_KEY_LEFT
 #define P_MOV_SPD 1
@@ -83,6 +82,9 @@ static void player_handle_movement() {
 	if (foreground[map_y][right_x] == STAIR_RIGHT && p.dir == RIGHT) {
 		p.y = (map_y - 1) * TILE_SIZE;
 	}
+
+	if (p.x < 0) p.x = 0;
+	if (p.x > BUFFER_W - p.w) p.x = BUFFER_W - p.w;
 }
 
 static void player_handle_gun() {
